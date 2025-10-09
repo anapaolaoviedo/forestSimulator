@@ -21,6 +21,7 @@ route("/simulations", method = POST) do
         south_wind_speed=south_wind,
         west_wind_speed=west_wind,
         big_jumps=big_jumps_val
+        
     )
 
     id = string(uuid1())
