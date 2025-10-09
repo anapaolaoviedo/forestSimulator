@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-// import './App.css'
 import '@aws-amplify/ui-react/styles.css';
 import { Button, SliderField } from "@aws-amplify/ui-react";
 
@@ -8,7 +7,8 @@ function App() {
   let [trees, setTrees] = useState([]);
   let [gridSize, setGridSize] = useState(20);
   let [simSpeed, setSimSpeed] = useState(1);
-  let [density, setDensity] = useState(0.45);  //  AGREGAR ESTO
+  let [density, setDensity] = useState(0.45);
+  let [probabilityOfSpread, setProbabilityOfSpread] = useState(100);  
 
   const running = useRef(null);
 
@@ -19,7 +19,8 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         dim: [gridSize, gridSize],
-        density: density  //  AGREGAR ESTO
+        density: density,
+        probability_of_spread: probabilityOfSpread  
       })
     }).then(resp => resp.json())
     .then(data => {
@@ -37,7 +38,7 @@ function App() {
       .then(data => {
         setTrees(data["trees"]);
       });
-    }, 1000 / simSpeed);  //  OPCIONAL: para que simSpeed funcione
+    }, 1000 / simSpeed);
   };
 
   const handleStop = () => {
@@ -77,13 +78,20 @@ function App() {
           value={simSpeed}
           onChange={setSimSpeed}
         />
-        {/* AGREGAR ESTE SLIDER */}
         <SliderField
           label="Forest Density"
           min={0.1} max={1.0} step={0.05}
           type='number'
           value={density}
           onChange={setDensity}
+        />
+        {/* ✅ AGREGAR ESTE SLIDER */}
+        <SliderField
+          label="Probability of Spread (%)"
+          min={0} max={100} step={1}
+          type='number'
+          value={probabilityOfSpread}
+          onChange={setProbabilityOfSpread}
         />
       </div>
       <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" style={{backgroundColor:"white"}}>
