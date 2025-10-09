@@ -11,6 +11,7 @@ function App() {
   let [probabilityOfSpread, setProbabilityOfSpread] = useState(100);
   let [southWindSpeed, setSouthWindSpeed] = useState(0);
   let [westWindSpeed, setWestWindSpeed] = useState(0);
+  let [bigJumps, setBigJumps] = useState(false);
 
   const running = useRef(null);
 
@@ -30,11 +31,12 @@ function App() {
         density: density,
         probability_of_spread: probabilityOfSpread,
         south_wind_speed: southWindSpeed,
-        west_wind_speed: westWindSpeed
+        west_wind_speed: westWindSpeed,
+        big_jumps: bigJumps
       })
     })
     .then(resp => {
-      console.log(" Respuesta recibida:", resp.status);
+      console.log("Respuesta recibida:", resp.status);
       return resp.json();
     })
     .then(data => {
@@ -55,11 +57,11 @@ function App() {
     }
     
     if (running.current) {
-      console.warn(" Ya está corriendo");
+      console.warn("Ya está corriendo");
       return;
     }
 
-    console.log(" Start - Iniciando simulación");
+    console.log("Start - Iniciando simulación");
     
     running.current = setInterval(() => {
       fetch("http://localhost:8000" + location)
@@ -79,7 +81,7 @@ function App() {
           setTrees(data["trees"]);
         })
         .catch(error => {
-          console.error(" Error:", error.message);
+          console.error("❌ Error:", error.message);
           alert(error.message);
           handleStop();
         });
@@ -88,7 +90,7 @@ function App() {
 
   const handleStop = () => {
     if (running.current) {
-      console.log(" Stop");
+      console.log("⏹️ Stop");
       clearInterval(running.current);
       running.current = null;
     }
@@ -97,7 +99,7 @@ function App() {
   let burning = trees.filter(t => t.status === "burning").length;
 
   if (burning === 0 && trees.length > 0 && running.current) {
-    console.log(" No hay más árboles quemándose. Auto-stop.");
+    console.log("No hay más árboles quemándose. Auto-stop.");
     handleStop();
   }
 
@@ -163,6 +165,17 @@ function App() {
           value={westWindSpeed}
           onChange={setWestWindSpeed}
         />
+        
+        <div style={{margin: "10px 0"}}>
+          <label>
+            <input
+              type="checkbox"
+              checked={bigJumps}
+              onChange={(e) => setBigJumps(e.target.checked)}
+            />
+            {" "}Enable Big Jumps (sparks at distance)
+          </label>
+        </div>
       </div>
       
       <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" style={{backgroundColor:"white"}}>
